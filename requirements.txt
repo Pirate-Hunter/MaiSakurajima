@@ -2,6 +2,7 @@ future
 emoji
 lxml
 beautifulsoup4
+redis
 requests
 sqlalchemy
 python-telegram-bot==12.8
