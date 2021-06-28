@@ -203,9 +203,6 @@ def start(update: Update, context: CallbackContext):
                          InlineKeyboardButton(
                              text="🚨 Support 🚨",
                              url=f"https://t.me/{SUPPORT_CHAT}"),
-                         InlineKeyboardButton(
-                             text="🔗 Source 🔗",
-                             url="https://github.com/Raki-12/Mai-Sakurajima")
                      ],
                      [
                          InlineKeyboardButton(
