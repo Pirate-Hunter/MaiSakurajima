@@ -201,7 +201,7 @@ def start(update: Update, context: CallbackContext):
                     ],
                      [
                          InlineKeyboardButton(
-                             text="🚨 Support 🚨",
+                             text="🐇 Fandom 🐇",
                              url=f"https://t.me/{SUPPORT_CHAT}"),
                      ],
                      [
