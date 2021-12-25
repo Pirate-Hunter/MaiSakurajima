@@ -65,7 +65,7 @@ RUN apt update && apt upgrade -y && \
 RUN pip3 install --upgrade pip setuptools
 
 # Copy Python Requirements to /root/SungJinwooRobot
-RUN git clone -b shiken https://github.com/Pirate-Hunter/Sung-Jinwoo /root/SungJinwooRobot
+RUN git clone -b master https://github.com/Pirate-Hunter/Sung-Jinwoo /root/SungJinwooRobot
 WORKDIR /root/SungJinwooRobot
 
 #Copy config file to /root/SungJinwooRobot/SungJinwooRobot

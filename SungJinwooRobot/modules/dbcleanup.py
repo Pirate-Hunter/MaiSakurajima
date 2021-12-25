@@ -86,7 +86,6 @@ def get_invalid_gban(update: Update,
         return ungbanned_users
 
 
-@run_async
 @dev_plus
 def dbcleanup(update: Update, context: CallbackContext):
     msg = update.effective_message
@@ -106,7 +105,7 @@ def dbcleanup(update: Update, context: CallbackContext):
         reply, reply_markup=InlineKeyboardMarkup(buttons))
 
 
-@run_async
+
 def callback_button(update: Update, context: CallbackContext):
     bot = context.bot
     query = update.callback_query
@@ -139,8 +138,8 @@ def callback_button(update: Update, context: CallbackContext):
             query.answer("You are not allowed to use this.")
 
 
-DB_CLEANUP_HANDLER = CommandHandler("dbcleanup", dbcleanup)
-BUTTON_HANDLER = CallbackQueryHandler(callback_button, pattern='db_.*')
+DB_CLEANUP_HANDLER = CommandHandler("dbcleanup", dbcleanup, run_async=True)
+BUTTON_HANDLER = CallbackQueryHandler(callback_button, pattern='db_.*', run_async=True)
 
 dispatcher.add_handler(DB_CLEANUP_HANDLER)
 dispatcher.add_handler(BUTTON_HANDLER)

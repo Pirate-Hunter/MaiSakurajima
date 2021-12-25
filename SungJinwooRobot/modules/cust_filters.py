@@ -15,7 +15,9 @@ from telegram.ext import (
 )
 from telegram.utils.helpers import mention_html, escape_markdown
 
-from SungJinwooRobot import dispatcher, LOGGER, DRAGONS
+from SungJinwooRobot import DRAGONS as SUDO_USERS 
+from SungJinwooRobot import LOGGER as log 
+from SungJinwooRobot import dispatcher
 from SungJinwooRobot.modules.disable import DisableAbleCommandHandler
 from SungJinwooRobot.modules.helper_funcs.handlers import MessageHandlerChecker
 from SungJinwooRobot.modules.helper_funcs.chat_status import user_admin
@@ -50,7 +52,7 @@ ENUM_FUNC_MAP = {
 }
 
 
-@run_async
+
 @typing_action
 def list_handlers(update, context):
     chat = update.effective_chat
@@ -265,7 +267,7 @@ def stop_filter(update, context):
     )
 
 
-@run_async
+
 def reply_filter(update, context):
     chat = update.effective_chat  # type: Optional[Chat]
     message = update.effective_message  # type: Optional[Message]
@@ -312,18 +314,15 @@ def reply_filter(update, context):
                             context.bot.send_sticker(
                                 chat.id,
                                 sticker_id,
-                                reply_to_message_id=message.message_id)
+                                reply_to_message_id=message.message_id
+                            )
                             return
                         except BadRequest as excp:
                             if excp.message == 'Wrong remote file identifier specified: wrong padding in the string':
-                                context.bot.send_message(
-                                    chat.id,
-                                    "Message couldn't be sent, Is the sticker id valid?"
-                                )
+                                context.bot.send_message(chat.id, "Message couldn't be sent, Is the sticker id valid?")
                                 return
                             else:
-                                LOGGER.exception("Error in filters: " +
-                                                 excp.message)
+                                LOGGER.exception("Error in filters: " + excp.message)
                                 return
                     valid_format = escape_invalid_curly_brackets(
                         text, VALID_WELCOME_FORMATTERS)
@@ -393,20 +392,21 @@ def reply_filter(update, context):
                                                  excp.message)
                                 pass
                 else:
-                    try:
+                    if ENUM_FUNC_MAP[filt.file_type] == dispatcher.bot.send_sticker:
+                        ENUM_FUNC_MAP[filt.file_type](
+                            chat.id,
+                            filt.file_id,
+                            reply_to_message_id=message.message_id,
+                            reply_markup=keyboard,
+                        )
+                    else:
                         ENUM_FUNC_MAP[filt.file_type](
                             chat.id,
                             filt.file_id,
                             caption=markdown_to_html(filtext),
                             reply_to_message_id=message.message_id,
                             parse_mode=ParseMode.HTML,
-                            disable_web_page_preview=True,
                             reply_markup=keyboard,
-                        )
-                    except BadRequest:
-                        send_message(
-                            message,
-                            "I don't have the permission to send the content of the filter."
                         )
                 break
             else:
@@ -489,7 +489,7 @@ def reply_filter(update, context):
                 break
 
 
-@run_async
+
 def rmall_filters(update, context):
     chat = update.effective_chat
     user = update.effective_user
@@ -510,7 +510,7 @@ def rmall_filters(update, context):
             parse_mode=ParseMode.MARKDOWN)
 
 
-@run_async
+
 def rmall_callback(update, context):
     query = update.callback_query
     chat = update.effective_chat
@@ -596,10 +596,9 @@ def __chat_settings__(chat_id, user_id):
 
 
 __help__ = """
- • `/filters`*:* List all active filters saved in the chat.
-
+ ➢ /filters*:* List all active filters saved in the chat.
 *Admin only:*
- • `/filter <keyword> <reply message>`*:* Add a filter to this chat. The bot will now reply that message whenever 'keyword'\
+ ➢ /filter <keyword> <reply message>*:* Add a filter to this chat. The bot will now reply that message whenever 'keyword'\
 is mentioned. If you reply to a sticker with a keyword, the bot will reply with that sticker. NOTE: all filter \
 keywords are in lowercase. If you want your keyword to be a sentence, use quotes. eg: /filter "hey there" How you \
 doin?
@@ -611,14 +610,11 @@ doin?
  Reply 2
  %%%
  Reply 3`
- • `/stop <filter keyword>`*:* Stop that filter.
-
+ ➢ /stop <filter keyword>*:* Stop that filter.
 *Chat creator only:*
- • `/removeallfilters`*:* Remove all chat filters at once.
-
+ ➢ /removeallfilters*:* Remove all chat filters at once.
 *Note*: Filters also support markdown formatters like: {first}, {last} etc.. and buttons.
 Check `/markdownhelp` to know more!
-
 """
 
 __mod_name__ = "Filters"
@@ -626,13 +622,13 @@ __mod_name__ = "Filters"
 FILTER_HANDLER = CommandHandler("filter", filters)
 STOP_HANDLER = CommandHandler("stop", stop_filter)
 RMALLFILTER_HANDLER = CommandHandler(
-    "removeallfilters", rmall_filters, filters=Filters.group)
+    "removeallfilters", rmall_filters, filters=Filters.chat_type.groups, run_async=True)
 RMALLFILTER_CALLBACK = CallbackQueryHandler(
-    rmall_callback, pattern=r"filters_.*")
+    rmall_callback, pattern=r"filters_.*", run_async=True)
 LIST_HANDLER = DisableAbleCommandHandler(
-    "filters", list_handlers, admin_ok=True)
+    "filters", list_handlers, admin_ok=True, run_async=True)
 CUST_FILTER_HANDLER = MessageHandler(
-    CustomFilters.has_text & ~Filters.update.edited_message, reply_filter)
+    CustomFilters.has_text & ~Filters.update.edited_message, reply_filter, run_async=True)
 
 dispatcher.add_handler(FILTER_HANDLER)
 dispatcher.add_handler(STOP_HANDLER)

@@ -12,7 +12,6 @@ def convert(speed):
 
 
 @dev_plus
-@run_async
 def speedtestxyz(update: Update, context: CallbackContext):
     buttons = [[
         InlineKeyboardButton("Image", callback_data="speedtest_image"),
@@ -22,7 +21,6 @@ def speedtestxyz(update: Update, context: CallbackContext):
         "Select SpeedTest Mode", reply_markup=InlineKeyboardMarkup(buttons))
 
 
-@run_async
 def speedtestxyz_callback(update: Update, context: CallbackContext):
     query = update.callback_query
 
@@ -50,9 +48,9 @@ def speedtestxyz_callback(update: Update, context: CallbackContext):
             "You are required to join Heroes Association to use this command.")
 
 
-SPEED_TEST_HANDLER = DisableAbleCommandHandler("speedtest", speedtestxyz)
+SPEED_TEST_HANDLER = DisableAbleCommandHandler("speedtest", speedtestxyz, run_async=True)
 SPEED_TEST_CALLBACKHANDLER = CallbackQueryHandler(
-    speedtestxyz_callback, pattern='speedtest_.*')
+    speedtestxyz_callback, pattern='speedtest_.*', run_async=True)
 
 dispatcher.add_handler(SPEED_TEST_HANDLER)
 dispatcher.add_handler(SPEED_TEST_CALLBACKHANDLER)

@@ -19,7 +19,7 @@ from SungJinwooRobot.modules.disable import DisableAbleCommandHandler
 
 combot_stickers_url = "https://combot.org/telegram/stickers?q="
 
-@run_async
+
 def cb_sticker(update: Update, context: CallbackContext):
     msg = update.effective_message
     split = msg.text.split(' ', 1)
@@ -41,7 +41,7 @@ def cb_sticker(update: Update, context: CallbackContext):
 
 
 
-@run_async
+
 def addsticker(update, context):
     msg = update.effective_message
     user = update.effective_user
@@ -517,7 +517,7 @@ def makepack_internal(
     else:
         msg.reply_text("Failed to create sticker pack. Possibly due to blek mejik.")
 
-@run_async
+
 def getsticker(update, context):
     msg = update.effective_message
     chat_id = update.effective_chat.id
@@ -548,7 +548,7 @@ def getsticker(update, context):
         )
 
 
-@run_async
+
 def stickerid(update, context):
     msg = update.effective_message
     if msg.reply_to_message and msg.reply_to_message.sticker:
@@ -568,7 +568,6 @@ def stickerid(update, context):
             parse_mode=ParseMode.HTML,
         )
 
-@run_async
 def delsticker(update, context):
     msg = update.effective_message
     if msg.reply_to_message and msg.reply_to_message.sticker:
@@ -582,7 +581,7 @@ def delsticker(update, context):
             "Please reply to sticker message to del sticker"
         )
     
-@run_async
+
 def add_fvrtsticker(update, context):
     bot = context.bot
     message = update.effective_message  
@@ -620,7 +619,7 @@ def add_fvrtsticker(update, context):
             'Reply to any sticker!'
         )  
 
-@run_async
+
 def list_fvrtsticker(update, context): 
     message = update.effective_message  
     chat = update.effective_chat 
@@ -639,7 +638,7 @@ def list_fvrtsticker(update, context):
             "You haven't added any sticker yet."
         )
 
-@run_async
+
 def remove_fvrtsticker(update, context): 
     message = update.effective_message  
     chat = update.effective_chat 
@@ -677,14 +676,14 @@ Stickers made easy with stickers module!
 """
 
 __mod_name__ = "Stickers"
-KANG_HANDLER = DisableAbleCommandHandler(["kang", "steal"] , addsticker, pass_args=True)
-DEL_HANDLER = DisableAbleCommandHandler("remove", delsticker)
-STICKERID_HANDLER = DisableAbleCommandHandler("stickerid", stickerid)
-ADD_FSTICKER_HANDLER = DisableAbleCommandHandler(["addfav","afv"], add_fvrtsticker, pass_args=True)
-REMOVE_FSTICKER_HANDLER = DisableAbleCommandHandler(["removefslav","rfv"], remove_fvrtsticker, pass_args=True)
-MY_FSTICKERS_HANDLER = DisableAbleCommandHandler(["myfav","mfv"], list_fvrtsticker)
-GETSTICKER_HANDLER = DisableAbleCommandHandler("getsticker", getsticker)
-FIND_STICKERS_HANDLER = DisableAbleCommandHandler("stickers", cb_sticker)
+KANG_HANDLER = DisableAbleCommandHandler(["kang", "steal"] , addsticker, pass_args=True, run_async=True)
+DEL_HANDLER = DisableAbleCommandHandler("remove", delsticker, run_async=True)
+STICKERID_HANDLER = DisableAbleCommandHandler("stickerid", stickerid, run_async=True)
+ADD_FSTICKER_HANDLER = DisableAbleCommandHandler(["addfav","afv"], add_fvrtsticker, pass_args=True, run_async=True)
+REMOVE_FSTICKER_HANDLER = DisableAbleCommandHandler(["removefslav","rfv"], remove_fvrtsticker, pass_args=True, run_async=True)
+MY_FSTICKERS_HANDLER = DisableAbleCommandHandler(["myfav","mfv"], list_fvrtsticker, run_async=True)
+GETSTICKER_HANDLER = DisableAbleCommandHandler("getsticker", getsticker, run_async=True)
+FIND_STICKERS_HANDLER = DisableAbleCommandHandler("stickers", cb_sticker, run_async=True)
 
 
 dispatcher.add_handler(KANG_HANDLER)

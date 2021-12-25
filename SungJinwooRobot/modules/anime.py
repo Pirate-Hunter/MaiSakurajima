@@ -25,9 +25,9 @@ def shorten(description, info='anilist.co'):
     msg = ""
     if len(description) > 700:
         description = description[0:500] + '....'
-        msg += f"\n*Description*: _{description}_[Read More]({info})"
+        msg += f"\n*Description*: {description}[Read More]({info})"
     else:
-        msg += f"\n*Description*:_{description}_"
+        msg += f"\n*Description*: {description}"
     return msg
 
 
@@ -162,14 +162,15 @@ query ($id: Int,$search: String) {
 url = 'https://graphql.anilist.co'
 
 
-@run_async
+
 @typing_action
 def airing(update, context):
     message = update.effective_message
     search_str = message.text.split(' ', 1)
     if len(search_str) == 1:
         update.effective_message.reply_text(
-            '**Usage:** `/airing` <anime name>)')
+            '*Usage:* `/airing <anime name>`',
+            parse_mode = ParseMode.MARKDOWN)
         return
     variables = {'search': search_str[1]}
     response = requests.post(
@@ -189,7 +190,7 @@ def airing(update, context):
     update.effective_message.reply_text(msg, parse_mode=ParseMode.MARKDOWN)
 
 
-@run_async
+
 @typing_action
 def anime(update, context):
     message = update.effective_message
@@ -260,7 +261,7 @@ def anime(update, context):
                 reply_markup=InlineKeyboardMarkup(buttons))
 
 
-@run_async
+
 @typing_action
 def character(update, context):
     message = update.effective_message
@@ -300,7 +301,7 @@ def character(update, context):
                 msg.replace('<b>', '</b>'), reply_markup=InlineKeyboardMarkup(buttons), parse_mode=ParseMode.MARKDOWN)
 
 
-@run_async
+
 @typing_action
 def manga(update, context):
     message = update.effective_message
@@ -366,7 +367,7 @@ def manga(update, context):
                 reply_markup=InlineKeyboardMarkup(buttons))
 
 
-@run_async
+
 @typing_action
 def user(update, context):
     message = update.effective_message
@@ -450,7 +451,7 @@ def user(update, context):
     progress_message.delete()
 
 
-@run_async
+
 @typing_action
 def upcoming(update, context):
     jikan = jikanpy.jikan.Jikan()
@@ -466,7 +467,7 @@ def upcoming(update, context):
 
     update.effective_message.reply_text(upcoming_message)
 
-@run_async
+
 def watchlist(update, context):
     chat = update.effective_chat  
     user = update.effective_user 
@@ -485,7 +486,7 @@ def watchlist(update, context):
         message.reply_text(
             "You havn't added anything in your watchlist!"
         )
-@run_async
+
 def removewatchlist(update, context):
     user = update.effective_user 
     message = update.effective_message 
@@ -510,7 +511,7 @@ def removewatchlist(update, context):
         )
         REDIS.srem(f'anime_watch_list{user.id}', removewlist)
 
-@run_async
+
 def fvrtchar(update, context):
     chat = update.effective_chat  
     user = update.effective_user 
@@ -530,7 +531,7 @@ def fvrtchar(update, context):
             "You havn't added any waifu in your harem!"
         )
         
-@run_async
+
 def removefvrtchar(update, context):
     user = update.effective_user 
     message = update.effective_message 
@@ -555,7 +556,7 @@ def removefvrtchar(update, context):
         )
         REDIS.srem(f'anime_fvrtchar{user.id}', removewlist)
     
-@run_async
+
 def readmanga(update, context):
     chat = update.effective_chat  
     user = update.effective_user 
@@ -574,8 +575,8 @@ def readmanga(update, context):
         message.reply_text(
             "You havn't added anything in your manga list!"
         )
-        
-@run_async
+
+
 def removemangalist(update, context):
     user = update.effective_user 
     message = update.effective_message 
@@ -677,23 +678,25 @@ def button(update, context):
             query.answer("You are not allowed to use this.")
 
 def anime_quote():
-    url = "https://animechanapi.xyz/api/quotes/random"
-    response = requests.get(url)
+    url = "https://animechan.vercel.app/api/random"
     # since text attribute returns dictionary like string
-    dic = json.loads(response.text)
-    quote = dic["data"][0]["quote"]
-    character = dic["data"][0]["character"]
-    anime = dic["data"][0]["anime"]
+    response = requests.get(url)
+    try:
+        dic = json.loads(response.text)
+    except Exception:
+        pass
+    quote = dic["quote"]
+    character = dic["character"]
+    anime = dic["anime"]
     return quote, character, anime
 
 
-@run_async
 def quotes(update: Update, context: CallbackContext):
     message = update.effective_message
     quote, character, anime = anime_quote()
     msg = f"<i>❝{quote}❞</i>\n\n<b>{character} from {anime}</b>"
     keyboard = InlineKeyboardMarkup(
-        [[InlineKeyboardButton(text="Change", callback_data="change_quote")]]
+        [[InlineKeyboardButton(text="Change🔁", callback_data="change_quote")]]
     )
     message.reply_text(
         msg,
@@ -702,7 +705,6 @@ def quotes(update: Update, context: CallbackContext):
     )
 
 
-@run_async
 def change_quote(update: Update, context: CallbackContext):
     query = update.callback_query
     chat = update.effective_chat
@@ -710,10 +712,9 @@ def change_quote(update: Update, context: CallbackContext):
     quote, character, anime = anime_quote()
     msg = f"<i>❝{quote}❞</i>\n\n<b>{character} from {anime}</b>"
     keyboard = InlineKeyboardMarkup(
-        [[InlineKeyboardButton(text="Change", callback_data="quote_change")]]
+        [[InlineKeyboardButton(text="Change🔁", callback_data="quote_change")]]
     )
     message.edit_text(msg, reply_markup=keyboard, parse_mode=ParseMode.HTML)
-
 
 
 __help__ = """
@@ -736,24 +737,24 @@ __help__ = """
  • /rmanga | rml <manga>: to remove a manga from your list.                                
  """
 
-ANIME_HANDLER = DisableAbleCommandHandler("anime", anime)
-AIRING_HANDLER = DisableAbleCommandHandler("airing", airing)
+ANIME_HANDLER = DisableAbleCommandHandler("anime", anime, run_async=True)
+AIRING_HANDLER = DisableAbleCommandHandler("airing", airing, run_async=True)
 CHARACTER_HANDLER = DisableAbleCommandHandler("character", character)
-MANGA_HANDLER = DisableAbleCommandHandler("manga", manga)
-USER_HANDLER = DisableAbleCommandHandler("user", user)
-UPCOMING_HANDLER = DisableAbleCommandHandler("schedule", upcoming)
-BUTTON_HANDLER = CallbackQueryHandler(button, pattern='anime_.*')
-WATCHLIST_HANDLER = DisableAbleCommandHandler("watchlist", watchlist)
-MANGALIST_HANDLER = DisableAbleCommandHandler("mangalist", readmanga)
-FVRT_CHAR_HANDLER = DisableAbleCommandHandler(["characterlist","fcl","mywaifus"], fvrtchar)
-REMOVE_WATCHLIST_HANDLER = DisableAbleCommandHandler(["removewatchlist","rwl"], removewatchlist)
-REMOVE_FVRT_CHAR_HANDLER = DisableAbleCommandHandler(["rfcharacter","rfcl"], removefvrtchar)
-REMOVE_MANGA_CHAR_HANDLER = DisableAbleCommandHandler(["rmanga","rml"], removemangalist)
-BUTTON_HANDLER = CallbackQueryHandler(button, pattern='anime_.*')
-ANIME_STUFFS_HANDLER = CallbackQueryHandler(animestuffs, pattern='xanime_.*')
+MANGA_HANDLER = DisableAbleCommandHandler("manga", manga, run_async=True)
+USER_HANDLER = DisableAbleCommandHandler("user", user, run_async=True)
+UPCOMING_HANDLER = DisableAbleCommandHandler("schedule", upcoming, run_async=True)
+BUTTON_HANDLER = CallbackQueryHandler(button, pattern='anime_.*', run_async=True)
+WATCHLIST_HANDLER = DisableAbleCommandHandler("watchlist", watchlist, run_async=True)
+MANGALIST_HANDLER = DisableAbleCommandHandler("mangalist", readmanga, run_async=True)
+FVRT_CHAR_HANDLER = DisableAbleCommandHandler(["characterlist","fcl","mywaifus"], fvrtchar, run_async=True)
+REMOVE_WATCHLIST_HANDLER = DisableAbleCommandHandler(["removewatchlist","rwl"], removewatchlist, run_async=True)
+REMOVE_FVRT_CHAR_HANDLER = DisableAbleCommandHandler(["rfcharacter","rfcl"], removefvrtchar, run_async=True)
+REMOVE_MANGA_CHAR_HANDLER = DisableAbleCommandHandler(["rmanga","rml"], removemangalist, run_async=True)
+BUTTON_HANDLER = CallbackQueryHandler(button, pattern='anime_.*', run_async=True)
+ANIME_STUFFS_HANDLER = CallbackQueryHandler(animestuffs, pattern='xanime_.*', run_async=True)
 QUOTE = DisableAbleCommandHandler("quote", quotes)
-CHANGE_QUOTE = CallbackQueryHandler(change_quote, pattern=r"change_.*")
-QUOTE_CHANGE = CallbackQueryHandler(change_quote, pattern=r"quote_.*")
+CHANGE_QUOTE = CallbackQueryHandler(change_quote, pattern=r"change_.*", run_async=True)
+QUOTE_CHANGE = CallbackQueryHandler(change_quote, pattern=r"quote_.*", run_async=True)
 
 dispatcher.add_handler(BUTTON_HANDLER)
 dispatcher.add_handler(ANIME_HANDLER)
