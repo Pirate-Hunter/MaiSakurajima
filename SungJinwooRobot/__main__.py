@@ -56,23 +56,23 @@ def get_readable_time(seconds: int) -> str:
 
 
 PM_START_TEXT = """
-Hello there, My Name is [Sung Jin-Woo](https://telegra.ph/file/f48f5be2c7ed4600d1002.mp4)
-I am a Anime Themed Group managing bot from Solo leveling
+Hello there, My Name is [Mai Sakurajima](https://telegra.ph/file/3991b1088807a2268853b.jpg)
+I am a Anime Themed Group managing bot.
 I will help you manage your group.
 ✏️ Click Below help button or send /help to know all my Commands.
 """
 buttons = [
     [        
         InlineKeyboardButton(
-        text="☑️Add Sung Jin-woo to your Group", url="t.me/SungJinWooRobot?startgroup=true"
+        text="☑️Add Mai Sakurajima to your group", url="t.me/SungJinWooRobot?startgroup=true"
         ),
     ],
     [        
         InlineKeyboardButton(
-        text="🚔 Support", url=f"https://t.me/{SUPPORT_CHAT}"
+        text="🐇Fandom🐇", url=f"https://t.me/{SUPPORT_CHAT}"
         ),
         InlineKeyboardButton(
-        text="📚 Solo Leveling", url=f"https://t.me/Solo_Leveling_Webtoon"
+        text="🥰Wanna know who I am?", url=f"https://t.me/bunny_girl_senpai_sub"
         ),
     ],
     [
@@ -82,7 +82,7 @@ buttons = [
     ]
 ]
 HELP_STRINGS = """
-*Main Commands*[:](https://telegra.ph/file/cdc84cf96c58eb4a01dfa.png)
+*Main Commands*:
 ✏️ /help: PM's you this message.
 ✏️ /start: You have already used it.
 *All commands can either be used with / or !.*  
