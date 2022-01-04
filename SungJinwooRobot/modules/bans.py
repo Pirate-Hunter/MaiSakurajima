@@ -733,7 +733,6 @@ def selfunban(context: CallbackContext, update: Update) -> str:
 @connection_status
 @bot_admin
 @can_restrict
-@user_admin_no_reply
 @user_can_ban
 @loggable
 def unbanb_btn(update: Update, context: CallbackContext) -> str:
