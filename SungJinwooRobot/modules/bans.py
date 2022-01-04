@@ -1,5 +1,11 @@
 import html
-
+import html
+from telegram import (
+    ParseMode,
+    Update,
+    InlineKeyboardButton,
+    InlineKeyboardMarkup,
+)
 from telegram import ParseMode, Update
 from telegram.error import BadRequest
 from telegram.ext import CallbackContext, CommandHandler, Filters, run_async
@@ -724,9 +730,13 @@ def selfunban(context: CallbackContext, update: Update) -> str:
 
     
 
+@connection_status
 @bot_admin
+@can_restrict
+@user_admin_no_reply
+@user_can_ban
 @loggable
-def un_banbutton(update: Update, context: CallbackContext) -> str:
+def unbanb_btn(update: Update, context: CallbackContext) -> str:
     bot = context.bot
     query = update.callback_query
     chat = update.effective_chat
@@ -739,42 +749,21 @@ def un_banbutton(update: Update, context: CallbackContext) -> str:
             if not is_user_admin(chat, int(user.id)):
                 bot.answer_callback_query(
                     query.id,
-                    text="You don't have enough rights to unban people",
+                    text="You don't have enough rights to unmute people",
                     show_alert=True,
                 )
                 return ""
-            if str(user_id).startswith("-100"):
-                chat.unban_sender_chat(int(user_id))
-                query.message.edit_text(
-                    f"Yep! <b>{user_id}</b> can send messages again!\n<b>Unbaned by:</b> {mention_html(user.id, user.first_name)}",
-                    parse_mode=ParseMode.HTML,
-                )
-                return ("<b>{}:</b>"
-                        "\n#UNBANED"
-                        "\n<b>Admin:</b> {}"
-                        "\n<b>User:</b> {}".format(
-                    html.escape(chat.title),
-                    mention_html(user.id, user.first_name),
-                    user_id,
-                ))
+            log_message = ""
             try:
                 member = chat.get_member(user_id)
             except BadRequest:
                 pass
-
-            reply_msg = (
-                f"{mention_html(member.user.id, member.user.first_name)} can join again!\n"
-                f"<b>Unbanned by:</b> {mention_html(user.id, user.first_name)}"
-            )
             chat.unban_member(user_id)
-            query.message.edit_text(
-                reply_msg,
-                parse_mode=ParseMode.HTML,
-            )
+            query.message.edit_text("Yep, this user can join!")
             bot.answer_callback_query(query.id, text="Unbanned!")
             return (
                 f"<b>{html.escape(chat.title)}:</b>\n"
-                "#UNBANNED\n"
+                f"#UNBANNED\n"
                 f"<b>Admin:</b> {mention_html(user.id, user.first_name)}\n"
                 f"<b>User:</b> {mention_html(member.user.id, member.user.first_name)}"
             )
