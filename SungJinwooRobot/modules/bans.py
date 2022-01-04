@@ -117,7 +117,7 @@ def ban(update: Update, context: CallbackContext):  # sourcery no-metrics
         log += "\n<b>Reason:</b> {}".format(reason)
 
     try:
-        chat.ban_member(user_id)
+        chat.kick_member(user_id)
         # bot.send_sticker(chat.id, BAN_STICKER)  # banhammer marie sticker
         reply = (
             f"<b>Banned❗</b>\n"
@@ -223,7 +223,7 @@ def dban(update: Update, context: CallbackContext) -> str:
         log += "\n<b>Reason:</b> {}".format(reason)
 
     try:
-        chat.ban_member(user_id)
+        chat.kick_member(user_id)
         # bot.send_sticker(chat.id, BAN_STICKER)  # banhammer marie sticker
         reply = (
             f"<b>Banned❗</b>\n"
@@ -387,7 +387,7 @@ def temp_ban(update: Update, context: CallbackContext) -> str:
         log += "\n<b>Reason:</b> {}".format(reason)
 
     try:
-        chat.ban_member(user_id, until_date=bantime)
+        chat.kick_member(user_id, until_date=bantime)
         reply_msg = (
             f"❗<b>Time Banned</b>\n"
             f"<b>• User:</b> {mention_html(member.user.id, html.escape(member.user.first_name))}\n"
@@ -494,7 +494,7 @@ def stemp_ban(update: Update, context: CallbackContext) -> str:
         log += "\n<b>Reason:</b> {}".format(reason)
 
     try:
-        chat.ban_member(user_id, until_date=bantime)
+        chat.kick_member(user_id, until_date=bantime)
         # bot.send_sticker(chat.id, BAN_STICKER)  # banhammer marie sticker
         return log
 
